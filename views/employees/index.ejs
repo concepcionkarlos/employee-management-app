@@ -4,13 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Employee Management</title>
-
-  <!-- Bootstrap CSS from CDN - handles all the responsive layout and components -->
+  <!-- Bootstrap CSS -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet"
   />
-  <!-- Bootstrap Icons for the small icons in buttons and navbar -->
+  <!-- Bootstrap Icons -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     rel="stylesheet"
@@ -18,7 +17,6 @@
 </head>
 <body class="bg-light">
 
-  <!-- navbar at the top - clicking the brand goes back to the list -->
   <nav class="navbar navbar-dark bg-primary">
     <div class="container">
       <a class="navbar-brand fw-bold" href="/employees">
@@ -29,7 +27,6 @@
 
   <div class="container py-4">
 
-    <!-- page header with the Add button on the right -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="mb-0 fw-bold">Employees</h2>
       <a href="/employees/new" class="btn btn-primary">
@@ -37,16 +34,14 @@
       </a>
     </div>
 
-    <!-- show a message if there are no employees yet -->
+    <!-- empty state -->
     <% if (employees.length === 0) { %>
       <div class="alert alert-info text-center" role="alert">
         <i class="bi bi-info-circle me-1"></i>
         No employees found. <a href="/employees/new" class="alert-link">Add the first one.</a>
       </div>
-
     <% } else { %>
 
-      <!-- employee table wrapped in a card for cleaner look -->
       <div class="card shadow-sm">
         <div class="card-body p-0">
           <div class="table-responsive">
@@ -63,7 +58,6 @@
                 </tr>
               </thead>
               <tbody>
-                <!-- loop through each employee coming from the route -->
                 <% employees.forEach((employee, index) => { %>
                   <tr>
                     <td class="text-muted"><%= index + 1 %></td>
@@ -72,17 +66,13 @@
                     </td>
                     <td><%= employee.email %></td>
                     <td>
-                      <!-- badge just to make department stand out a bit -->
                       <span class="badge bg-secondary"><%= employee.department %></span>
                     </td>
                     <td><%= employee.position %></td>
                     <td class="text-end">
-                      <!-- toLocaleString formats the number with commas e.g. $75,000 -->
                       $<%= employee.salary.toLocaleString("en-US") %>
                     </td>
                     <td class="text-center">
-
-                      <!-- edit button - goes to the edit form for this employee -->
                       <a
                         href="/employees/<%= employee._id %>/edit"
                         class="btn btn-sm btn-outline-primary me-1"
@@ -91,23 +81,17 @@
                         <i class="bi bi-pencil"></i>
                       </a>
 
-                      <!-- delete button - uses a form with POST + _method=DELETE
-                           because HTML forms don't support DELETE natively -->
+                      <!-- delete uses a form because links can't send DELETE requests -->
                       <form
                         action="/employees/<%= employee._id %>?_method=DELETE"
                         method="POST"
                         class="d-inline"
                         onsubmit="return confirm('Delete <%= employee.firstName %> <%= employee.lastName %>?')"
                       >
-                        <button
-                          type="submit"
-                          class="btn btn-sm btn-outline-danger"
-                          title="Delete"
-                        >
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                           <i class="bi bi-trash"></i>
                         </button>
                       </form>
-
                     </td>
                   </tr>
                 <% }) %>
@@ -115,8 +99,6 @@
             </table>
           </div>
         </div>
-
-        <!-- footer shows total count -->
         <div class="card-footer text-muted small">
           Total: <%= employees.length %> employee<%= employees.length !== 1 ? 's' : '' %>
         </div>
@@ -125,7 +107,6 @@
     <% } %>
   </div>
 
-  <!-- Bootstrap JS needed for interactive components -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

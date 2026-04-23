@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 
-// define the shape of an employee document in MongoDB
 const employeeSchema = new mongoose.Schema(
   {
-    // name fields - trim removes accidental whitespace
+    // personal info
     firstName: {
       type: String,
       required: true,
@@ -14,15 +13,13 @@ const employeeSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
-    // contact
     email: {
       type: String,
       required: true,
       trim: true,
     },
 
-    // job info
+    // job details
     department: {
       type: String,
       required: true,
@@ -34,14 +31,13 @@ const employeeSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // stored as a number so we can format it later (e.g. toLocaleString)
+    // Number type so we can format it with toLocaleString in the view
     salary: {
       type: Number,
       required: true,
     },
   },
-  { timestamps: true } // mongoose adds createdAt and updatedAt automatically
+  { timestamps: true } // adds createdAt and updatedAt to every document
 );
 
-// export the model so routes can use it
 module.exports = mongoose.model("Employee", employeeSchema);

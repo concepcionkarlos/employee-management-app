@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-// bring in the Employee model to interact with MongoDB
 const Employee = require("../models/employee");
 
-// --- helper: validate form data before saving ---
-// returns an array of error messages, empty if everything is ok
+// validate form data before hitting the database
+// returns an array of error strings - empty array means everything is fine
 function validateEmployee(data) {
   const errs = [];
 
@@ -15,7 +14,7 @@ function validateEmployee(data) {
   if (!data.department?.trim()) errs.push("Department is required.");
   if (!data.position?.trim()) errs.push("Position is required.");
 
-  // salary needs to exist and be a positive number
+  // had to handle salary separately because 0 is falsy in JS
   if (!data.salary && data.salary !== 0) {
     errs.push("Salary is required.");
   } else if (isNaN(Number(data.salary)) || Number(data.salary) < 0) {
@@ -25,7 +24,7 @@ function validateEmployee(data) {
   return errs;
 }
 
-// GET /employees - show all employees, newest first
+// GET /employees
 router.get("/", async (req, res) => {
   try {
     const employees = await Employee.find().sort({ createdAt: -1 });
@@ -35,18 +34,18 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET /employees/new - show the form to add a new employee
+// GET /employees/new
 router.get("/new", (req, res) => {
-  // pass empty errors and formData so the view doesn't crash on first load
+  // pass empty errors and formData so EJS doesn't crash on undefined
   res.render("employees/new", { errors: [], formData: {} });
 });
 
-// POST /employees - save a new employee to the database
+// POST /employees - create a new employee
 router.post("/", async (req, res) => {
   const errors = validateEmployee(req.body);
 
-  // if there are errors, go back to the form and show them
   if (errors.length) {
+    // go back to the form and keep what the user typed (formData)
     return res.status(422).render("employees/new", { errors, formData: req.body });
   }
 
@@ -61,7 +60,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// GET /employees/:id/edit - show the edit form pre-filled with current data
+// GET /employees/:id/edit
 router.get("/:id/edit", async (req, res) => {
   try {
     const employee = await Employee.findById(req.params.id);
@@ -72,16 +71,15 @@ router.get("/:id/edit", async (req, res) => {
   }
 });
 
-// PUT /employees/:id - update an existing employee
-// (the form sends POST but method-override turns it into PUT)
+// PUT /employees/:id - update employee
+// the form uses POST + ?_method=PUT because browsers don't support PUT in forms
 router.put("/:id", async (req, res) => {
   const errors = validateEmployee(req.body);
 
   if (errors.length) {
-    // reload the edit form with the errors and the submitted data
     try {
       const employee = await Employee.findById(req.params.id);
-      Object.assign(employee, req.body); // keep the user's edits visible in the form
+      Object.assign(employee, req.body); // merge submitted data so the form stays filled
       return res.status(422).render("employees/edit", { employee, errors });
     } catch {
       return res.status(404).send("Employee not found");
@@ -96,7 +94,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE /employees/:id - remove an employee from the database
+// DELETE /employees/:id
 router.delete("/:id", async (req, res) => {
   try {
     await Employee.findByIdAndDelete(req.params.id);

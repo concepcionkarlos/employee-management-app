@@ -1,44 +1,37 @@
-// load environment variables from .env file (MONGO_URI, PORT)
+// load environment variables from .env (MONGO_URI, PORT)
 require("dotenv").config();
 
-// --- dependencies ---
 const express = require("express");
 const mongoose = require("mongoose");
-const methodOverride = require("method-override"); // lets forms send PUT and DELETE
+const methodOverride = require("method-override"); // needed so forms can send PUT and DELETE
 const path = require("path");
 
-// --- routes ---
 const employeeRoutes = require("./routes/employees");
 
 const app = express();
 
-// --- view engine setup ---
-// using EJS so we can render dynamic HTML with data from the database
+// tell express to use EJS and where to find the views folder
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// --- middleware ---
-app.use(express.urlencoded({ extended: true })); // parse form data
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(methodOverride("_method")); // read _method from query string to override POST
+app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
-// --- database connection ---
-// MONGO_URI comes from .env so credentials are never in the code
+// connect to MongoDB Atlas using the URI from .env
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
-// --- mount routes ---
 app.use("/employees", employeeRoutes);
 
-// redirect root "/" to the employees list
+// root just redirects to the employees list
 app.get("/", (req, res) => {
   res.redirect("/employees");
 });
 
-// --- start server ---
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
