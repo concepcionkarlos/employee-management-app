@@ -38,6 +38,26 @@ MONGO_URI=your_connection_string_here
 
 This was my first time connecting a Node app to a real cloud database. Setting up Mongoose and getting the schema right took some trial and error. I also learned how middleware works in Express and why the order you add it matters.
 
+## Run with Docker
+
+Build the image:
+
+```
+docker build -t employee-app .
+```
+
+Run the container (you need to pass your MongoDB URI since `.env` isn't included in the image):
+
+```
+docker run -p 3000:3000 -e MONGO_URI="your_connection_string_here" employee-app
+```
+
+Then open: http://localhost:3000/employees
+
+## What I Learned
+
+This was my first time connecting a Node app to a real cloud database. Setting up Mongoose and getting the schema right took some trial and error. I also learned how middleware works in Express and why the order you add it matters.
+
 ## Notes
 
 The trickiest part was handling PUT and DELETE requests since HTML forms only support GET and POST. I used the `method-override` package to get around that — you pass `?_method=PUT` in the form action and it works.
